@@ -1,0 +1,43 @@
+# Compilados de Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse / STS
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# VSCode
+.vscode/
+.history/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Variables de entorno locales (NUNCA subir secrets)
+.env
+.env.local
+application-secrets.yml
+
+# Cobertura
+.scannerwork/
