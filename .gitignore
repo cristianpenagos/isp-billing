@@ -24,7 +24,7 @@ out/
 .history/
 
 # Maven
-.mvn/wrapper/maven-wrapper.jar
+target/
 
 # Sistema operativo
 .DS_Store
