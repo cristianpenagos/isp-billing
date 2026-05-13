@@ -35,7 +35,8 @@
         <jacoco.minimum.coverage.domain>0.85</jacoco.minimum.coverage.domain>
 
         <!-- Configuracion de Sonar -->
-        <sonar.organization>tu-organizacion-sonar</sonar.organization>
+        <sonar.organization>cristianpenagos</sonar.organization>
+        <sonar.projectKey>cristianpenagos_isp-billing</sonar.projectKey>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.build.directory}/site/jacoco/jacoco.xml

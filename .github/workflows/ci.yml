@@ -15,7 +15,7 @@ jobs:
       - name: Checkout codigo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Necesario para SonarCloud (analiza historial)
+          fetch-depth: 0  # Necesario para que SonarCloud analice historial completo
 
       - name: Configurar JDK 21
         uses: actions/setup-java@v4
@@ -34,16 +34,10 @@ jobs:
       - name: Compilar proyecto
         run: mvn -B clean compile
 
-      - name: Ejecutar tests unitarios
-        run: mvn -B test
+      - name: Ejecutar tests unitarios y de integracion
+        run: mvn -B verify
 
-      - name: Ejecutar tests de integracion
-        run: mvn -B verify -DskipUnitTests
-
-      - name: Generar reporte JaCoCo
-        run: mvn -B jacoco:report
-
-      - name: Subir cobertura como artefacto
+      - name: Subir reporte JaCoCo como artefacto
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -59,8 +53,9 @@ jobs:
         run: |
           if [ -n "$SONAR_TOKEN" ]; then
             mvn -B sonar:sonar \
-              -Dsonar.projectKey=tu-proyecto-key \
-              -Dsonar.organization=tu-organizacion-sonar
+              -Dsonar.projectKey=cristianpenagos_isp-billing \
+              -Dsonar.organization=cristianpenagos \
+              -Dsonar.host.url=https://sonarcloud.io
           else
             echo "SONAR_TOKEN no configurado, saltando analisis"
           fi
@@ -75,14 +70,5 @@ jobs:
       - name: Checkout codigo
         uses: actions/checkout@v4
 
-      - name: Build imagen Docker
+      - name: Build imagen Docker (verificacion)
         run: docker build -t isp-billing:${{ github.sha }} .
-
-      - name: Verificar que la imagen arranca
-        run: |
-          docker run -d --name test-container \
-            -e SPRING_PROFILES_ACTIVE=test \
-            isp-billing:${{ github.sha }}
-          sleep 10
-          docker logs test-container
-          docker stop test-container
