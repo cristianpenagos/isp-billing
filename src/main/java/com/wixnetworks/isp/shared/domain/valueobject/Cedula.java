@@ -48,7 +48,7 @@ public final class Cedula {
         }
 
         if (numeroLimpio.length()<longitudMinima || numeroLimpio.length()>longitudMaxima) {
-            throw new DatoInvalidoException("La cedula debe tener entre "+longitudMinima+" y "+longitudMaxima" digitos, recibido: "+numeroLimpio.length() +" digitos");
+            throw new DatoInvalidoException("La cedula debe tener entre "+longitudMinima+" y "+longitudMaxima +" digitos, recibido: "+numeroLimpio.length() +" digitos");
         }
         return new Cedula(numeroLimpio);
     }
