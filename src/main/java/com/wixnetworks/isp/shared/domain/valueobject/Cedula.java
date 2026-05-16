@@ -15,11 +15,10 @@ import java.util.Objects;
  * Inmutable: una vez creada, su valor no puede cambiar.
  * Igualdad por valor: dos cedulas con el mismo numero son iguales.
  */
-
 public final class Cedula {
 
-    private static final int longitudMinima = 6;
-    private static final int longitudMaxima = 10;
+    private static final int LONGITUD_MINIMA = 6;
+    private static final int LONGITUD_MAXIMA = 10;
 
     private final String numero;
 
@@ -35,24 +34,32 @@ public final class Cedula {
      * @throws DatoInvalidoException si el numero es nulo, vacio, contiene
      *         caracteres no numericos o tiene longitud invalida
      */
-
-
     public static Cedula de(String numero) {
-        if (numero == null || numero.isEmpty()){
+        // Validacion 1: nulo, vacio o solo espacios en blanco
+        if (numero == null || numero.isBlank()) {
             throw new DatoInvalidoException("La cedula no puede estar vacia");
         }
+
+        // Limpieza: quitar espacios al inicio y al final
         String numeroLimpio = numero.trim();
 
-        if (!numeroLimpio.matches("\\d+")){
-            throw new DatoInvalidoException("La cedula solo puede contener digitos, Recibido: "+numero);
+        // Validacion 2: solo digitos
+        if (!numeroLimpio.matches("\\d+")) {
+            throw new DatoInvalidoException(
+                    "La cedula solo puede contener digitos, recibido: " + numero);
         }
 
-        if (numeroLimpio.length()<longitudMinima || numeroLimpio.length()>longitudMaxima) {
-            throw new DatoInvalidoException("La cedula debe tener entre "+longitudMinima+" y "+longitudMaxima +" digitos, recibido: "+numeroLimpio.length() +" digitos");
+        // Validacion 3: longitud
+        if (numeroLimpio.length() < LONGITUD_MINIMA || numeroLimpio.length() > LONGITUD_MAXIMA) {
+            throw new DatoInvalidoException(
+                    "La cedula debe tener entre " + LONGITUD_MINIMA + " y " + LONGITUD_MAXIMA +
+                            " digitos, recibido: " + numeroLimpio.length() + " digitos");
         }
+
         return new Cedula(numeroLimpio);
     }
-    public String valor(){
+
+    public String valor() {
         return numero;
     }
 
