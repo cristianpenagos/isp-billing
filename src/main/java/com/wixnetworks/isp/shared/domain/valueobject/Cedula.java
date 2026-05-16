@@ -55,4 +55,34 @@ public final class Cedula {
     public String valor(){
         return numero;
     }
+
+    /**
+     * Retorna una version enmascarada de la cedula para mostrar publicamente.
+     * Muestra solo los ultimos 3 digitos. Ej: "1234567890" -> "*******890"
+     */
+    public String enmascarar() {
+        int digitosVisibles = 3;
+        if (numero.length() <= digitosVisibles) {
+            return "*".repeat(numero.length());
+        }
+        int digitosOcultos = numero.length() - digitosVisibles;
+        return "*".repeat(digitosOcultos) + numero.substring(digitosOcultos);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cedula cedula)) return false;
+        return Objects.equals(numero, cedula.numero);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numero);
+    }
+
+    @Override
+    public String toString() {
+        return numero;
+    }
 }
