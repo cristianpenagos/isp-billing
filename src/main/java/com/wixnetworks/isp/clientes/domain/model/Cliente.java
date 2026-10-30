@@ -32,3 +32,71 @@ import java.util.UUID;
  * - Para cambios de estado se usan los metodos de dominio (suspender/reactivar/retirar)
  */
 
+public class Cliente{
+
+    private final UUID id;
+    private final String codigoInterno;
+    private final Cedula cedula;
+    private String nombreCompleto;
+    private Telefono telefonoWhatsApp;
+    private Email email;
+    private Direccion direccion;
+    private EstadoCliente estado;
+    private final List<EquipoCPE> equipos;
+    private final LocalDate fechaRegistro;
+
+    private Cliente(UUID id, String codigoInterno, Cedula cedula, String nombreCompleto, Telefono telefonoWhatsApp, Email email, Direccion direccion, EstadoCliente estado, List<EquipoCPE> equipos, LocalDate fechaRegistro) {
+
+        this.id = id;
+        this.codigoInterno = codigoInterno;
+        this.cedula = cedula;
+        this.nombreCompleto = nombreCompleto;
+        this.telefonoWhatsApp = telefonoWhatsApp;
+        this.email = email;
+        this.direccion = direccion;
+        this.estado = estado;
+        this.equipos = equipos;
+        this.fechaRegistro = fechaRegistro;
+
+    }
+
+    /**
+     * Registra un cliente nuevo. Nace ACTIVO, sin equipos, con fecha de registro hoy.
+     */
+
+    public static Cliente registrar(String codigoInterno, Cedula cedula,
+                                    String nombreCompleto, Telefono telefonoWhatsApp,
+                                    Email email, Direccion direccion) {
+        validarCodigoInterno(codigoInterno);
+        validarNombre(nombreCompleto);
+        validarObligatorio(cedula, "cedula");
+        validarObligatorio(telefonoWhatsApp, "telefono");
+        validarObligatorio(email, "email");
+        validarObligatorio(direccion, "direccion");
+
+        return new Cliente(
+                UUID.randomUUID(),
+                codigoInterno.trim(),
+                cedula,
+                nombreCompleto.trim(),
+                telefonoWhatsApp,
+                email,
+                direccion,
+                EstadoCliente.ACTIVO,
+                new ArrayList<>(),
+                LocalDate.now()
+        );
+    }
+
+
+    /**
+     * Reconstruye un cliente desde la base de datos.
+     * Usado por el adaptador JPA.
+     */
+
+
+
+
+
+
+}
