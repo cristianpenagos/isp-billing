@@ -24,14 +24,16 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Configurar Docker Buildx
-        # Inicializa Docker con cliente API moderno (>= 1.40) requerido por Testcontainers
-        uses: docker/setup-buildx-action@v3
+      - name: Instalar Docker moderno
+        # Reinstala Docker con version moderna (API >= 1.40) requerida por Testcontainers.
+        # El runner ubuntu-latest trae Docker viejo que Testcontainers rechaza.
+        uses: docker/setup-docker-action@v4
 
       - name: Verificar Docker disponible
         # Falla temprano si Docker no esta listo, mejor error que esperar a mvn verify
         run: |
           docker version
+          docker info
           docker ps
 
       - name: Cache de paquetes SonarCloud
