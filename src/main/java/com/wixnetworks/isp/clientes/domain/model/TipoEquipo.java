@@ -6,7 +6,7 @@ package com.wixnetworks.isp.clientes.domain.model;
  */
 
 public enum TipoEquipo{
-    Router,
+    ROUTER,
     ONU,
     MIKROTIK,
     ANTENA,
