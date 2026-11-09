@@ -11,6 +11,29 @@ jobs:
     name: Build, Test y Quality Gates
     runs-on: ubuntu-latest
 
+    # PostgreSQL arrancado como service container por el runner.
+    # Esto evita el problema de Docker-in-Docker con Testcontainers.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: isp_billing_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # Variables que la clase AbstractPostgresIT lee para saber que esta en CI
+    env:
+      CI_POSTGRES_URL: jdbc:postgresql://localhost:5432/isp_billing_test
+      CI_POSTGRES_USER: test
+      CI_POSTGRES_PASSWORD: test
+
     steps:
       - name: Checkout codigo
         uses: actions/checkout@v5
@@ -24,17 +47,14 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Instalar Docker moderno
-        # Reinstala Docker con version moderna (API >= 1.40) requerida por Testcontainers.
-        # El runner ubuntu-latest trae Docker viejo que Testcontainers rechaza.
-        uses: docker/setup-docker-action@v4
-
-      - name: Verificar Docker disponible
-        # Falla temprano si Docker no esta listo, mejor error que esperar a mvn verify
+      - name: Verificar PostgreSQL disponible
+        # El runner ya arranco el service container, verificamos que responde
         run: |
-          docker version
-          docker info
-          docker ps
+          until pg_isready -h localhost -p 5432 -U test; do
+            echo "Esperando a PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL listo"
 
       - name: Cache de paquetes SonarCloud
         uses: actions/cache@v5
@@ -47,7 +67,8 @@ jobs:
         run: mvn -B clean compile
 
       - name: Ejecutar tests unitarios y de integracion
-        # verify incluye compile, test (unitarios), integration-test (IT con Testcontainers), verify
+        # verify incluye compile, test (unitarios), integration-test (IT), verify
+        # Los IT usaran el PostgreSQL del service container via CI_POSTGRES_URL
         run: mvn -B verify
 
       - name: Subir reporte JaCoCo como artefacto
@@ -85,4 +106,4 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Build imagen Docker (verificacion)
-        run: docker build -t isp-billing:${{ github.sha }} .
+        run: docker build -t isp-billing:${{ github.sha }} .ild -t isp-billing:${{ github.sha }} .
