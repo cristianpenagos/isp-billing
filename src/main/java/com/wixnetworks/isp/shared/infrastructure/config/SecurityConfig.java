@@ -18,14 +18,22 @@ import java.util.List;
 /**
  * Configuracion de seguridad de la aplicacion.
  *
- * IMPORTANTE: Esta es la configuracion de la FASE 0 (walking skeleton).
- * Solo deja accesibles los endpoints publicos. Cuando implementemos IAM completo
- * en la Fase 7, esta clase sera reemplazada para validar JWT en endpoints protegidos.
+ * ESTADO ACTUAL (Fase 1 - Modulo Clientes):
+ * Los endpoints de negocio estan abiertos para poder trabajar la API desde
+ * Swagger, Postman y la UI mientras no exista autenticacion JWT.
  *
- * Por ahora:
- * - /api/v1/health esta abierto (para Render y UptimeRobot)
- * - /swagger-ui.html y /api-docs estan abiertos (documentacion publica de la API)
- * - El resto requiere autenticacion (rechaza con 401)
+ * Endpoints publicos:
+ *  - /api/v1/health y /actuator/health (Render y UptimeRobot)
+ *  - /swagger-ui y /api-docs (documentacion interactiva)
+ *  - /api/v1/** (negocio - temporalmente abierto)
+ *
+ * TODO FASE 7: implementar autenticacion JWT:
+ *  - JWT HS256 60min + refresh 7 dias
+ *  - BCrypt 12 rondas para passwords
+ *  - Modulo IAM con usuarios y roles
+ *  - Reemplazar .requestMatchers("/api/v1/**").permitAll() por:
+ *      .requestMatchers("/api/v1/auth/**").permitAll()
+ *      .requestMatchers("/api/v1/**").authenticated()
  */
 @Configuration
 public class SecurityConfig {
@@ -36,15 +44,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
-                .requestMatchers("/actuator/health").permitAll()
-                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs/**").permitAll()
-                .anyRequest().authenticated()
-            );
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs/**").permitAll()
+                        // TODO FASE 7: estos endpoints deben requerir autenticacion JWT.
+                        // Por ahora publicos para poder trabajar la API desde Swagger y Postman.
+                        .requestMatchers("/api/v1/**").permitAll()
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }
