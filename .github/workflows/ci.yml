@@ -106,4 +106,4 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Build imagen Docker (verificacion)
-        run: docker build -t isp-billing:${{ github.sha }} .ild -t isp-billing:${{ github.sha }} .
+        run: docker build -t isp-billing:${{ github.sha }} .
